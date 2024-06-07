@@ -1,0 +1,89 @@
+header {
+	background-color: #3CD1BB;
+	padding: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	box-sizing: border-box;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+.header-content {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	max-width: 1200px;
+	padding: 0 10px;
+	position: relative;
+}
+
+.header-content h1 {
+	margin: 0;
+	color: white;
+	font-size: 1.5em;
+	font-family: Arial, sans-serif;
+	text-align: center;
+	flex-grow: 1;
+}
+
+.header-content img.reload-icon {
+	cursor: pointer;
+	width: 30px;
+	height: auto;
+	position: absolute;
+	left: 10px;
+}
+
+.home-link {
+	cursor: pointer;
+}
+
+.imageContainer img {
+    max-width: 60%; /* 최대 너비 */
+    max-height: auto; /* 최대 높이 */
+	border-radius: 15px;
+}
+
+body {
+	font-family: Arial, sans-serif;
+	background-color: #f0f0f0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 90vh;
+	box-sizing: border-box;
+}
+
+.tableContainer {
+    border: 5px solid #E5EBF2;
+	background-color: #FFFFFF;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 10px 10px 0 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	max-width: fit-content;
+	font-size: 13px;
+	margin-left:auto; 
+    margin-right:auto;
+}
+
+.tableButton {
+    padding: 5px 5px;
+    background-color: #fff;
+    border: 1px solid #007BFF;
+    color: #007BFF;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 12px;
+    width: 100%; /* 버튼의 너비를 100%로 설정 */
+    box-sizing: border-box;
+}
+
+.tableButton:hover {
+    background-color: #007BFF;
+    color: #fff;
+}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Result</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="popup.css">
+    <style>
+        #resultImage {
+            display: block;
+            max-width: 100%;
+            margin: 50px auto;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="reload.svg" alt="reload icon" class="reload-icon" onclick="reloadPage()">
+            <h1><span class="home-link" onclick="redirectHome()">METRiGs</span></h1>
+        </div>
+    </header> 
+    <main>
+        <div class="imageContainer">
+            <img id="resultImage" alt="Translated Image">
+            <p></p>
+        </div>
+        <div class="tableContainer"></div>
+        <p></p>
+        </div>
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <span class="close" onclick="hidePopup()">&times;</span>
+                <img id="foodimage" src="image/Arroz_a_la_cubana.png" alt="Popup Image" style="max-width: 50%; max-height: 50%; margin: auto; display: block; border-radius: 10px;">
+                <div class="popup-text" style="text-align: center; font-size: 15px;">
+                    <h3>Arroz a la cubana</h3>
+                    <p>쿠바 쌀</p>
+                    <p>['흰 쌀', '바나나', '달걀', '식용유', '소금']</p>
+                    <p>Arroz a la cubana는 스페인과 라틴 아메리카 요리로, 코스타리칸 코스로 유명합니다. 이 요리는 흰 쌀과 토마토 소스가 들어간 바나나와 함께 제공되는 스페인식 볶음밥입니다. 바나나는 바삭한 외피와 달콤한 내용물이 볶음밥과 궁합이 잘 맞아, 색다른 맛을 즐길 수 있습니다.</p>
+                </div>
+            </div>
+        </div>    
+    </main>
+    <script>
+        const PORT1 = "<%= PORT1 %>";
+        const PORT2 = "<%= PORT2 %>";
+        const FASTAPI_URL1 = "<%= FASTAPI_URL1 %>";
+        const FASTAPI_URL2 = "<%= FASTAPI_URL2 %>";
+        const NODE_URL1 = "<%= NODE_URL1 %>";
+        const NODE_URL2 = "<%= NODE_URL2 %>";
+
+        // 페이지 새로고침 함수
+        function reloadPage() {
+            window.location.reload(); 
+        }
+
+        // 홈 버튼 리다이렉트
+        function redirectHome() {
+            window.location.href = NODE_URL2;
+            }
+        
+        function getQueryParams() {
+            const params = {};
+            window.location.search.substring(1).split("&").forEach(param => {
+                const [key, value] = param.split("=");
+                params[key] = decodeURIComponent(value);
+            });
+            return params;
+        }
+    
+        async function fetchImage(filename) {
+            try {
+                const response = await axios.get(`${FASTAPI_URL2}/get_image?filename=${filename}`, { responseType: 'blob' });
+                const imageUrl = URL.createObjectURL(response.data);
+                document.getElementById('resultImage').src = imageUrl;
+            } catch (error) {
+                console.error('Error fetching image:', error);
+            }
+        }
+        
+        async function fetchTranslatedData(filename) {
+            try {
+                const response = await axios.get(`${FASTAPI_URL1}/getTranslatedData?menu_id=${filename}`);
+                const translatedData = response.data.translated_texts;
+
+                const table = document.createElement('table');
+                table.style.margin = 'auto';
+                table.style.textAlign = 'center';
+
+                // 테이블 헤더 생성
+                const headerRow = document.createElement('tr');
+                const headers = ['Original Text', 'Translated Text', 'Generated Data'];
+                headers.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    headerRow.appendChild(th);
+                });
+                table.appendChild(headerRow);
+
+                // 번역된 데이터를 테이블에 추가
+                translatedData.forEach(data => {
+                    const row = document.createElement('tr');
+                    const originalTextCell = document.createElement('td');
+                    originalTextCell.textContent = data.extracted_text;
+                    row.appendChild(originalTextCell);
+
+                    const translatedTextCell = document.createElement('td');
+                    translatedTextCell.textContent = data.translated_text;
+                    row.appendChild(translatedTextCell);
+
+                    const generatedDataCell = document.createElement('td');
+                    const button = document.createElement('button');
+                    button.textContent = 'BUTTON';
+                    button.className = 'tableButton';
+                    button.addEventListener('click', () => {
+                        showPopup();
+                    });
+                    generatedDataCell.appendChild(button);
+                    row.appendChild(generatedDataCell);
+
+                    table.appendChild(row);
+                });
+
+                // 결과를 보여줄 요소에 테이블 추가
+                const resultDivs = document.getElementsByClassName('tableContainer');
+                for (let i = 0; i < resultDivs.length; i++) {
+                const resultDiv = resultDivs[i];
+                resultDiv.innerHTML = '';
+                resultDiv.appendChild(table);
+            }
+
+            } catch (error) {
+                console.error('Error fetching translated data:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const filename = params.get('filename');
+            if (filename) {
+                fetchImage(filename);
+                fetchTranslatedData(filename);
+            } else {
+                console.error('Filename parameter is missing');
+            }
+        });
+        
+        // 팝업 표시 함수
+        function showPopup(imageUrl) {
+            // 새 창을 열기 위해 window.open() 함수를 사용합니다.
+            var popupWindow = window.open("", "Popup", "width=500,height=400");
+            // 새 창에 팝업 내용을 쓰기 위해 document.write() 함수를 사용합니다.
+            popupWindow.document.write(document.getElementById("popup").innerHTML);
+            
+            // 전달받은 이미지 경로를 팝업 내부의 이미지에 설정합니다.
+            // popupWindow.document.getElementById("foodimage").src = imageUrl;
+
+            // 전달받은 텍스트를 팝업 내부에 설정합니다.
+            popupWindow.document.getElementById("popupText").innerText = text;
+        }
+
+        // 팝업 숨기기 함수
+        function hidePopup() {
+            window.close();
+        }
+    </script>
+</body>
+</html>
