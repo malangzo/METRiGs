@@ -29,4 +29,3 @@ router.get('/result', (req, res) => {
 });
 
 module.exports = router;
-
